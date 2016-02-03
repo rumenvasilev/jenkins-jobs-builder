@@ -1,5 +1,5 @@
 # jenkins-jobs-builder
-This is plugin support in the Jenkins Job Builder tool available from OpenStack repo.
+This is plugin support in the Jenkins Job Builder (http://docs.openstack.org/infra/jenkins-job-builder/)  tool available from OpenStack repo.
 I've sent it to their code review system (https://review.openstack.org/#/c/275304/),
 but for some reason, unknown to me, their Jenkins is rejecting it.
 
