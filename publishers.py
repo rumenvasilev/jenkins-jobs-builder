@@ -5679,14 +5679,15 @@ def hockeyapp(parser, xml_parent, data):
     """
 
     recorder = XML.SubElement(
-                              xml_parent, 
+                              xml_parent,
                               'hockeyapp.HockeyappRecorder',
                               {'schemaVersion': '2'})
     applications = XML.SubElement(recorder, 'applications')
     hockeyapp = XML.SubElement(
                                applications,
                                'hockeyapp.HockeyappApplication',
-                               {'plugin': 'hockeyapp@1.2.0', 'schemaVersion': '1'})
+                               {'plugin': 'hockeyapp@1.2.0',
+                                   'schemaVersion': '1'})
 
     # notify-team
     XML.SubElement(hockeyapp, 'notifyTeam').text = str(
@@ -5712,7 +5713,7 @@ def hockeyapp(parser, xml_parent, data):
     if 'packed-libraries' in data:
         XML.SubElement(hockeyapp, 'libsPath').text = str(
             data.get('packed-libraries', ''))
-    #### Release Notes
+    # Release Notes
     if 'release-notes' in data:
         try:
             rdata = iter(data['release-notes'])
@@ -5721,29 +5722,34 @@ def hockeyapp(parser, xml_parent, data):
                                        " one option for release-notes.")
 
         rdata = data['release-notes']
-        if 'no-release-notes' in rdata and ('use-change-log' in rdata
-            or 'from-file' in rdata or 'input' in rdata):
+        if 'no-release-notes' in rdata and ('use-change-log' in rdata or
+                                            'from-file' in rdata or
+                                            'input' in rdata):
             raise JenkinsJobsException("You cannot specify more"
                                        " than one release-notes options.")
-        if 'use-change-log' in rdata and ('no-release-notes' in rdata
-            or 'from-file' in rdata or 'input' in rdata):
+        if 'use-change-log' in rdata and ('no-release-notes' in rdata or
+                                          'from-file' in rdata or
+                                          'input' in rdata):
             raise JenkinsJobsException("You cannot specify more"
                                        " than one release-notes options.")
         if 'no-release-notes' in rdata:
+            var = 'net.hockeyapp.jenkins.releaseNotes.NoReleaseNotes'
             XML.SubElement(
                 hockeyapp,
                 'releaseNotesMethod',
-                {'class': 'net.hockeyapp.jenkins.releaseNotes.NoReleaseNotes'})
+                {'class': var})
         elif 'use-change-log' in rdata:
+            var = 'net.hockeyapp.jenkins.releaseNotes.ChangelogReleaseNotes'
             XML.SubElement(
                 hockeyapp,
                 'releaseNotesMethod',
-                {'class': 'net.hockeyapp.jenkins.releaseNotes.ChangelogReleaseNotes'})
+                {'class': var})
         elif 'from-file' in rdata:
+            var = 'net.hockeyapp.jenkins.releaseNotes.FileReleaseNotes'
             relnotes = XML.SubElement(
                 hockeyapp,
                 'releaseNotesMethod',
-                {'class': 'net.hockeyapp.jenkins.releaseNotes.FileReleaseNotes'})
+                {'class': var})
             nrdata = rdata['from-file']
             mandatory = 0
             for key in nrdata:
@@ -5752,36 +5758,42 @@ def hockeyapp(parser, xml_parent, data):
                         key.get('filename', 'False'))
                     mandatory = 1
                 XML.SubElement(relnotes, 'isMarkdown').text = str(
-                    key.get('interpret-release-notes-as-markdown', False)).lower()
+                    key.get('interpret-release-notes-as-markdown',
+                            False)).lower()
             if mandatory != 1:
                 raise JenkinsJobsException("filename must be defined"
-                                           " when from-file option is present.")
+                                           " when from-file option is"
+                                           " present.")
         elif 'input' in rdata:
+            var = 'net.hockeyapp.jenkins.releaseNotes.ManualReleaseNotes'
             relnotes = XML.SubElement(
                 hockeyapp,
                 'releaseNotesMethod',
-                {'class': 'net.hockeyapp.jenkins.releaseNotes.ManualReleaseNotes'})
+                {'class': var})
             nrdata = rdata['input']
             for key in nrdata:
                 if 'rel-notes-text' in key:
                     XML.SubElement(relnotes, 'releaseNotes').text = str(
                         key.get('rel-notes-text', ''))
                 XML.SubElement(relnotes, 'isMarkdown').text = str(
-                    key.get('interpret-release-notes-as-markdown', False)).lower()
+                    key.get('interpret-release-notes-as-markdown',
+                            False)).lower()
     # Upload method App/Version
     if 'upload-app' in data and 'app-id' in data:
         raise JenkinsJobsException("You cannot specify both app"
                                    " and version methods")
     if 'app-id' not in data:
+        var = 'net.hockeyapp.jenkins.uploadMethod.AppCreation'
         XML.SubElement(
             hockeyapp,
             'uploadMethod',
-            {'class': 'net.hockeyapp.jenkins.uploadMethod.AppCreation'})
+            {'class': var})
     else:
+        var = 'net.hockeyapp.jenkins.uploadMethod.VersionCreation'
         method = XML.SubElement(
             hockeyapp,
             'uploadMethod',
-            {'class': 'net.hockeyapp.jenkins.uploadMethod.VersionCreation'})
+            {'class': var})
         XML.SubElement(method, 'appId').text = str(
             data.get('app-id', ''))
     # Restrict Downloads to Tags
